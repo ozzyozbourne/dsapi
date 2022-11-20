@@ -4,7 +4,7 @@
 # Ignore Gradle build output directory
 build
 .idea/
-
+tokens/
 #file not needed to be pushed tp git
 gradle.properties
 **.json

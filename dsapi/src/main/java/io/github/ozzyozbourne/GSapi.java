@@ -57,7 +57,7 @@ public class GSapi<T> {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        return netHttpTransport;
+        return Objects.requireNonNull(netHttpTransport);
     }
 
     public UpdateValuesResponse update(List<List<Object>> valueToBeUploaded, String locationInSheets) throws IOException {
@@ -78,7 +78,7 @@ public class GSapi<T> {
 
         Credential credential;
 
-        try(InputStream inputStream = RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)){
+        try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
 
             GoogleClientSecrets clientSecrets =
                     GoogleClientSecrets.
@@ -101,8 +101,7 @@ public class GSapi<T> {
     }
 
     private Sheets getDSAuth(){
-        Credential credential = authorize();
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, credential)
+        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize())
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
@@ -179,15 +178,19 @@ public class GSapi<T> {
         }
 
 }
+
     @Override
     public String toString() {
-        return "GoogleSheets{" +
+        return "GSapi{" +
                 "GOOGLE_SHEETS_ID='" + GOOGLE_SHEETS_ID + '\'' +
                 ", APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
                 ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
                 ", CREDS_STORE='" + CREDS_STORE + '\'' +
                 ", JSON_FACTORY=" + JSON_FACTORY +
                 ", SCOPES=" + SCOPES +
+                ", netHttpTransport=" + netHttpTransport +
+                ", sheetsService=" + sheetsService +
+                ", RESOURCE_CLASS=" + RESOURCE_CLASS +
                 '}';
     }
 }
