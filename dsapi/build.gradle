@@ -1,10 +1,23 @@
 plugins {
     id 'java-library'
+    id 'signing'
+    id 'maven-publish'
 }
+
+group 'io.github.ozzyozbourne'
+version '1.0.0'
 
 repositories {
     mavenCentral()
 }
+
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+sourceCompatibility = 1.8
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
@@ -14,6 +27,68 @@ dependencies {
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.13.0'
 }
 
+publishing {
+    publications{
+
+        mavenJava(MavenPublication){
+
+            groupId = 'io.github.ozzyozbourne'
+            artifactId = 'dsapi'
+            version = '1.0.0'
+            from components.java
+
+            pom {
+                name = 'dsapi'
+                description = 'Google sheets CRUD with easy'
+                url = 'https://github.com/ozzyozbourne/dsapi'
+                inceptionYear = '2022'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'http://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'khanosaid'
+                        name = 'osaid khan'
+                        email = 'khanosaid726@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git:github.com/ozzyozbourne/dsapi.git'
+                    developerConnection = 'scm:git:ssh://github.com/ozzyozbourne/dsapi.git'
+                    url = 'https://github.com/ozzyozbourne/dsapi'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = project.properties["ossrhUsername"]
+                password = project.properties["ossrhPassword"]
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }

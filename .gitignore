@@ -5,4 +5,7 @@
 build
 .idea/
 
+#file not needed to be pushed tp git
+gradle.properties
 **.json
+secret-keys.gpg
