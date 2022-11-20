@@ -6,18 +6,11 @@ plugins {
 
 group 'io.github.ozzyozbourne'
 version '1.0.0'
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
-
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-sourceCompatibility = 1.8
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
@@ -25,6 +18,16 @@ dependencies {
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.34.1'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20220927-2.0.0'
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.13.0'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 publishing {
@@ -70,8 +73,8 @@ publishing {
             name = "OSSRH"
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username = project.properties["ossrhUsername"]
-                password = project.properties["ossrhPassword"]
+                username = project.storedUsername
+                password = project.storedPassword
             }
         }
     }
@@ -80,12 +83,6 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
-
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {

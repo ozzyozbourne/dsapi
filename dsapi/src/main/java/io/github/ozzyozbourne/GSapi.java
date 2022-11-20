@@ -124,7 +124,7 @@ public class GSapi<T> {
 
         private  String GOOGLE_SHEETS_ID;
 
-        private final  Class<T> RESOURCE_CLASS;
+        private  Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME;
         private  String TOKENS_DIRECTORY_PATH = "tokens";
         private  String CREDS_STORE = "/credstore/creds.json";
@@ -132,8 +132,8 @@ public class GSapi<T> {
         private boolean IS_SERVICE_ACCOUNT = true;
 
 
-        public static <T> Builder<T> getBuilder(Class<T> tClass){
-            return new Builder<>(tClass);
+        public static <T> Builder<T> getBuilder(){
+            return new Builder<>();
         }
 
         public GSapi<T> build()
@@ -146,8 +146,11 @@ public class GSapi<T> {
             return this;
         }
 
-        private Builder(Class<T> tClass) {
-            this.RESOURCE_CLASS = tClass;
+        private Builder() {}
+
+        public Builder<T> setRESOURCE_CLASS(Class<T> RESOURCE_CLASS) {
+            this.RESOURCE_CLASS = RESOURCE_CLASS;
+            return this;
         }
 
         public Builder<T> setAPPLICATION_NAME(String APPLICATION_NAME) {
@@ -174,8 +177,6 @@ public class GSapi<T> {
             this.IS_SERVICE_ACCOUNT = bool;
             return this;
         }
-
-
 
 }
     @Override
