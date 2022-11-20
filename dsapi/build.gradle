@@ -24,7 +24,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-
 java {
     withJavadocJar()
     withSourcesJar()
@@ -32,7 +31,6 @@ java {
 
 publishing {
     publications{
-
         mavenJava(MavenPublication){
 
             groupId = 'io.github.ozzyozbourne'
