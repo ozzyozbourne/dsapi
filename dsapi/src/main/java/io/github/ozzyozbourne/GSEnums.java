@@ -1,5 +1,8 @@
 package io.github.ozzyozbourne;
 
+/**
+ * All sheets Enums
+ */
 public enum GSEnums {
     FORMATTED_VALUE,
     UNFORMATTED_VALUE,
