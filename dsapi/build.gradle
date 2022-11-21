@@ -5,19 +5,11 @@ plugins {
 }
 
 group 'io.github.ozzyozbourne'
-version '1.0.0'
+version '2.0.0'
 
 repositories {
     mavenCentral()
 }
-
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-sourceCompatibility = 1.8
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
@@ -27,26 +19,34 @@ dependencies {
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.13.0'
 }
 
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications{
-
         mavenJava(MavenPublication){
 
             groupId = 'io.github.ozzyozbourne'
             artifactId = 'dsapi'
-            version = '1.0.0'
+            version = '2.0.0'
             from components.java
 
             pom {
                 name = 'dsapi'
-                description = 'Google sheets CRUD with easy'
+                description = 'Google sheets CRUD with ease'
                 url = 'https://github.com/ozzyozbourne/dsapi'
                 inceptionYear = '2022'
 
                 licenses {
                     license {
                         name = 'MIT License'
-                        url = 'http://www.opensource.org/licenses/mit-license.php'
+                        url = 'https://www.opensource.org/licenses/mit-license.php'
                     }
                 }
                 developers {
@@ -70,8 +70,8 @@ publishing {
             name = "OSSRH"
             url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             credentials {
-                username = project.properties["ossrhUsername"]
-                password = project.properties["ossrhPassword"]
+                username = project.storedUsername
+                password = project.storedPassword
             }
         }
     }
@@ -81,11 +81,9 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-
-tasks.named('test') {
-    useJUnitPlatform()
+tasks.withType(JavaCompile) {
+    options.release = 8
 }
-
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {

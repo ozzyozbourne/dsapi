@@ -57,7 +57,7 @@ public class GSapi<T> {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        return netHttpTransport;
+        return Objects.requireNonNull(netHttpTransport);
     }
 
     public UpdateValuesResponse update(List<List<Object>> valueToBeUploaded, String locationInSheets) throws IOException {
@@ -78,7 +78,7 @@ public class GSapi<T> {
 
         Credential credential;
 
-        try(InputStream inputStream = RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)){
+        try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
 
             GoogleClientSecrets clientSecrets =
                     GoogleClientSecrets.
@@ -101,8 +101,7 @@ public class GSapi<T> {
     }
 
     private Sheets getDSAuth(){
-        Credential credential = authorize();
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, credential)
+        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize())
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
@@ -124,7 +123,7 @@ public class GSapi<T> {
 
         private  String GOOGLE_SHEETS_ID;
 
-        private final  Class<T> RESOURCE_CLASS;
+        private  Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME;
         private  String TOKENS_DIRECTORY_PATH = "tokens";
         private  String CREDS_STORE = "/credstore/creds.json";
@@ -132,8 +131,8 @@ public class GSapi<T> {
         private boolean IS_SERVICE_ACCOUNT = true;
 
 
-        public static <T> Builder<T> getBuilder(Class<T> tClass){
-            return new Builder<>(tClass);
+        public static <T> Builder<T> getBuilder(){
+            return new Builder<>();
         }
 
         public GSapi<T> build()
@@ -146,8 +145,11 @@ public class GSapi<T> {
             return this;
         }
 
-        private Builder(Class<T> tClass) {
-            this.RESOURCE_CLASS = tClass;
+        private Builder() {}
+
+        public Builder<T> setRESOURCE_CLASS(Class<T> RESOURCE_CLASS) {
+            this.RESOURCE_CLASS = RESOURCE_CLASS;
+            return this;
         }
 
         public Builder<T> setAPPLICATION_NAME(String APPLICATION_NAME) {
@@ -175,18 +177,20 @@ public class GSapi<T> {
             return this;
         }
 
-
-
 }
+
     @Override
     public String toString() {
-        return "GoogleSheets{" +
+        return "GSapi{" +
                 "GOOGLE_SHEETS_ID='" + GOOGLE_SHEETS_ID + '\'' +
                 ", APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
                 ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
                 ", CREDS_STORE='" + CREDS_STORE + '\'' +
                 ", JSON_FACTORY=" + JSON_FACTORY +
                 ", SCOPES=" + SCOPES +
+                ", netHttpTransport=" + netHttpTransport +
+                ", sheetsService=" + sheetsService +
+                ", RESOURCE_CLASS=" + RESOURCE_CLASS +
                 '}';
     }
 }
