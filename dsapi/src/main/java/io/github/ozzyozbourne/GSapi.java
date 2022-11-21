@@ -27,6 +27,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+
+/**
+ *
+ * @author osaid khan
+ * @version 2.0.0
+ * @param <T> Class containing the necessary credentials files
+ * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
+ */
 public class GSapi<T> {
     private final String GOOGLE_SHEETS_ID;
     private final String APPLICATION_NAME;
@@ -35,8 +43,13 @@ public class GSapi<T> {
     private final JsonFactory JSON_FACTORY;
     private final List<String> SCOPES;
     private final NetHttpTransport netHttpTransport;
+    /**
+     * Exposing the sheets obj so users can build their own custom functions from it
+     */
     public  final Sheets sheetsService;
     private final  Class<T> RESOURCE_CLASS;
+
+
     private GSapi(Builder<T> builder)  {
         this.GOOGLE_SHEETS_ID = builder.GOOGLE_SHEETS_ID;
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
@@ -60,6 +73,15 @@ public class GSapi<T> {
         return Objects.requireNonNull(netHttpTransport);
     }
 
+
+    /**
+     *
+     * To Update values in a sheet
+     * @param valueToBeUploaded value that user want to upload to the Google sheets
+     * @param locationInSheets location in sheets in A1 notation
+     * @return response of the api
+     * @throws IOException Throws an exception in case of failure
+     */
     public UpdateValuesResponse update(List<List<Object>> valueToBeUploaded, String locationInSheets) throws IOException {
         return  sheetsService.spreadsheets()
                 .values()
@@ -67,6 +89,14 @@ public class GSapi<T> {
                 .setValueInputOption(GSEnums.USER_ENTERED.name()).setIncludeValuesInResponse(true).execute();
     }
 
+    /**
+     *
+     * To append values to a desired location in Google sheets
+     * @param valueToBeAppended value that user want to upload to the Google sheets
+     * @param locationInSheets location in sheets in A1 notation
+     * @return response of the api
+     * @throws IOException Throws an exception in case of failure
+     */
     public AppendValuesResponse append(List<List<Object>> valueToBeAppended, String locationInSheets) throws IOException {
         return  sheetsService.spreadsheets()
                 .values()
@@ -119,6 +149,10 @@ public class GSapi<T> {
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
+    /**
+     *
+     * @param <T> Class containing the necessary credentials files
+     */
     public static class Builder<T>{
 
         private  String GOOGLE_SHEETS_ID;
@@ -130,16 +164,30 @@ public class GSapi<T> {
         private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
         private boolean IS_SERVICE_ACCOUNT = true;
 
-
-        public static <T> Builder<T> getBuilder(){
+        /**
+         *
+         * @param t Variable of the class of type T
+         * @return Buider Object
+         * @param <T> Class containing the necessary credentials files
+         */
+        public static <T> Builder<T> getBuilder(Class<T> t){
             return new Builder<>();
         }
 
+        /**
+         *
+         * @return the Configured Google sheets object
+         */
         public GSapi<T> build()
         {
             return new GSapi<>(this);
         }
 
+        /**
+         *
+         * @param GOOGLE_SHEETS_ID Sets the Google sheets id
+         * @return Builder Object
+         */
         public Builder<T> setGOOGLE_SHEETS_ID(String GOOGLE_SHEETS_ID) {
             this.GOOGLE_SHEETS_ID = GOOGLE_SHEETS_ID;
             return this;
@@ -147,31 +195,61 @@ public class GSapi<T> {
 
         private Builder() {}
 
+        /**
+         *
+         * @param RESOURCE_CLASS sets the class resource
+         * @return Builder Object
+         */
         public Builder<T> setRESOURCE_CLASS(Class<T> RESOURCE_CLASS) {
             this.RESOURCE_CLASS = RESOURCE_CLASS;
             return this;
         }
 
+        /**
+         *
+         * @param APPLICATION_NAME Sets the application name
+         * @return Builder Object
+         */
         public Builder<T> setAPPLICATION_NAME(String APPLICATION_NAME) {
             this.APPLICATION_NAME = APPLICATION_NAME;
             return this;
         }
 
+        /**
+         *
+         * @param TOKENS_DIRECTORY_PATH sets the token directory path DEFAULT is tokens
+         * @return Builder Object
+         */
         public Builder<T> setTOKENS_DIRECTORY_PATH(String TOKENS_DIRECTORY_PATH) {
             this.TOKENS_DIRECTORY_PATH = TOKENS_DIRECTORY_PATH;
             return this;
         }
 
+        /**
+         *
+         * @param CREDS_STORE sets the path to Google sheets credentials in the resource folder
+         * @return Builder Object
+         */
         public Builder<T> setCREDS_STORE(String CREDS_STORE) {
             this.CREDS_STORE = CREDS_STORE;
             return this;
         }
 
+        /**
+         *
+         * @param SCOPES Sets the scope of sheets default is read and write both
+         * @return Builder Object
+         */
         public Builder<T> setSCOPES(List<String> SCOPES) {
             this.SCOPES = SCOPES;
             return this;
         }
 
+        /**
+         *
+         * @param bool Sets which authorisation flow to use Default is service account flow
+         * @return Builder Object
+         */
         public Builder<T> IS_SERVICE_ACCOUNT(boolean bool) {
             this.IS_SERVICE_ACCOUNT = bool;
             return this;
