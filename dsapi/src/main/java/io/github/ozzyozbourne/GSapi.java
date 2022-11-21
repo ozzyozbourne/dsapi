@@ -166,10 +166,11 @@ public class GSapi<T> {
 
         /**
          *
-         * @return Builder object
+         * @param t Variable of the class of type T
+         * @return Buider Object
          * @param <T> Class containing the necessary credentials files
          */
-        public static <T> Builder<T> getBuilder(){
+        public static <T> Builder<T> getBuilder(Class<T> t){
             return new Builder<>();
         }
 
