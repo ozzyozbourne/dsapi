@@ -31,7 +31,7 @@ import java.util.Objects;
 /**
  *
  * @author osaid khan
- * @version 2.0.0
+ * @version 3.0.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
@@ -143,8 +143,9 @@ public class GSapi<T> {
             credentials.createScoped(SCOPES).refreshIfExpired();
         }catch (Exception e){
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY,
+        return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
                 new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
                 .setApplicationName(APPLICATION_NAME).build();
     }
@@ -156,7 +157,6 @@ public class GSapi<T> {
     public static class Builder<T>{
 
         private  String GOOGLE_SHEETS_ID;
-
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME;
         private  String TOKENS_DIRECTORY_PATH = "tokens";
