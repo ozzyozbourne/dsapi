@@ -183,7 +183,7 @@ public class GSapi<T> {
 
         /**
          *
-         * @param APPLICATION_NAME Sets the application name
+         * @param APPLICATION_NAME Sets the application name default name is DSApi
          * @return Builder Object
          */
         public Builder<T> setAPPLICATION_NAME(String APPLICATION_NAME) {

@@ -44,8 +44,7 @@ class LibraryTest {
 
     @Test void gdApiServiceBuilderTest() {
         GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
-                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
-                .setAPPLICATION_NAME("Desktop client 1").build();
+                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
 
         System.out.println(gsapi);
 
