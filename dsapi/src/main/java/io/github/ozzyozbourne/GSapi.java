@@ -137,7 +137,7 @@ public class GSapi<T> {
 
 
     private Sheets getDSService(){
-        GoogleCredentials credentials = null;
+        GoogleCredentials credentials;
         try {
             credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
             credentials.createScoped(SCOPES).refreshIfExpired();
