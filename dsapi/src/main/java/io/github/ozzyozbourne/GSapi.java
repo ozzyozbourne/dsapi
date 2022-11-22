@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  *
  * @author osaid khan
@@ -62,17 +61,14 @@ public class GSapi<T> {
         this.sheetsService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
     }
     private NetHttpTransport getNetHttpTransPort(){
-
         NetHttpTransport netHttpTransport;
         try {
             netHttpTransport =  GoogleNetHttpTransport.newTrustedTransport();
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-        return Objects.requireNonNull(netHttpTransport);
+        }return Objects.requireNonNull(netHttpTransport);
     }
-
 
     /**
      *
@@ -107,34 +103,23 @@ public class GSapi<T> {
     private Credential authorize(){
 
         Credential credential;
-
         try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
-
-            GoogleClientSecrets clientSecrets =
-                    GoogleClientSecrets.
+            GoogleClientSecrets clientSecrets = GoogleClientSecrets.
                             load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(
-                    netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
+            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline")
                     .build();
-
             credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-        return Objects.requireNonNull(credential);
-
+        }return Objects.requireNonNull(credential);
     }
 
     private Sheets getDSAuth(){
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize())
-                .setApplicationName(APPLICATION_NAME).build();
+        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
     }
-
 
     private Sheets getDSService(){
         GoogleCredentials credentials;
@@ -144,8 +129,7 @@ public class GSapi<T> {
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-        return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
+        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
                 new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
                 .setApplicationName(APPLICATION_NAME).build();
     }
@@ -197,8 +181,6 @@ public class GSapi<T> {
             this.RESOURCE_CLASS = RESOURCE_CLASS;
         }
 
-
-
         /**
          *
          * @param APPLICATION_NAME Sets the application name
@@ -248,9 +230,7 @@ public class GSapi<T> {
             this.IS_SERVICE_ACCOUNT = bool;
             return this;
         }
-
 }
-
     @Override
     public String toString() {
         return "GSapi{" +
