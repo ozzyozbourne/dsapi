@@ -157,7 +157,7 @@ public class GSapi<T> {
 
         private  String GOOGLE_SHEETS_ID;
 
-        private  Class<T> RESOURCE_CLASS;
+        private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME;
         private  String TOKENS_DIRECTORY_PATH = "tokens";
         private  String CREDS_STORE = "/credstore/creds.json";
@@ -171,7 +171,7 @@ public class GSapi<T> {
          * @param <T> Class containing the necessary credentials files
          */
         public static <T> Builder<T> getBuilder(Class<T> t){
-            return new Builder<>();
+            return new Builder<>(t);
         }
 
         /**
@@ -193,17 +193,11 @@ public class GSapi<T> {
             return this;
         }
 
-        private Builder() {}
-
-        /**
-         *
-         * @param RESOURCE_CLASS sets the class resource
-         * @return Builder Object
-         */
-        public Builder<T> setRESOURCE_CLASS(Class<T> RESOURCE_CLASS) {
+        private Builder(Class<T> RESOURCE_CLASS ) {
             this.RESOURCE_CLASS = RESOURCE_CLASS;
-            return this;
         }
+
+
 
         /**
          *
