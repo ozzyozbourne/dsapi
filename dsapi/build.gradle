@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.ozzyozbourne'
-version '2.1.1'
+version '3.0.0'
 
 repositories {
     mavenCentral()
@@ -38,7 +38,7 @@ publishing {
 
             groupId = 'io.github.ozzyozbourne'
             artifactId = 'dsapi'
-            version = '2.1.1'
+            version = '3.0.0'
             from components.java
 
             pom {
@@ -50,7 +50,7 @@ publishing {
                 licenses {
                     license {
                         name = 'MIT License'
-                        url = 'http://www.opensource.org/licenses/mit-license.php'
+                        url = 'https://www.opensource.org/licenses/mit-license.php'
                     }
                 }
                 developers {
