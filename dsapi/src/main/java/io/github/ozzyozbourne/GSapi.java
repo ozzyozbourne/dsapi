@@ -13,9 +13,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
@@ -27,11 +25,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-
 /**
  *
  * @author osaid khan
- * @version 2.0.0
+ * @version 3.1.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
@@ -62,17 +59,14 @@ public class GSapi<T> {
         this.sheetsService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
     }
     private NetHttpTransport getNetHttpTransPort(){
-
         NetHttpTransport netHttpTransport;
         try {
             netHttpTransport =  GoogleNetHttpTransport.newTrustedTransport();
         } catch (GeneralSecurityException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-        return Objects.requireNonNull(netHttpTransport);
+        }return Objects.requireNonNull(netHttpTransport);
     }
-
 
     /**
      *
@@ -104,47 +98,74 @@ public class GSapi<T> {
                 .setValueInputOption(GSEnums.USER_ENTERED.name()).setIncludeValuesInResponse(true).execute();
     }
 
+    /**
+     *
+     * @param location location in sheets in A1 notation
+     * @return Google sheets ValueRange Object containing the response
+     * @throws IOException Throws an exception in case of failure
+     */
+    public ValueRange read(String location) throws IOException{
+       return sheetsService.spreadsheets().values().get(GOOGLE_SHEETS_ID, location).execute();
+    }
+
+    /**
+     *
+     * @param spreadsheet Configuration of the spreadsheet
+     * @return A new Google spreadsheet
+     * @throws IOException Throws an exception in case of failure
+     */
+    public Spreadsheet create(Spreadsheet spreadsheet) throws IOException {
+       return sheetsService.spreadsheets().create(spreadsheet).setFields(GSEnums.spreadsheetId.name()).execute();
+    }
+
+    /**
+     *
+     * @param spreadsheetProperties Properties of a new sheets to be created
+     * @return SpreadSheets object call create function to create a new sheet with this properties
+     */
+    public Spreadsheet defineSheet(SpreadsheetProperties spreadsheetProperties){
+        return new Spreadsheet().setProperties(spreadsheetProperties);
+    }
+
+    /**
+     *
+     * @param title Set the title of the sheet
+     * @return Sheets properties obj with new title
+     */
+    public SpreadsheetProperties getSheetPropertiesTitle(String title){
+        return new SpreadsheetProperties().setTitle(title);
+    }
+
     private Credential authorize(){
 
         Credential credential;
-
         try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
-
-            GoogleClientSecrets clientSecrets =
-                    GoogleClientSecrets.
+            GoogleClientSecrets clientSecrets = GoogleClientSecrets.
                             load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(
-                    netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
+            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline")
                     .build();
-
             credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-        return Objects.requireNonNull(credential);
-
+        }return Objects.requireNonNull(credential);
     }
 
     private Sheets getDSAuth(){
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize())
-                .setApplicationName(APPLICATION_NAME).build();
+        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
     }
 
-
     private Sheets getDSService(){
-        GoogleCredentials credentials = null;
+        GoogleCredentials credentials;
         try {
             credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
             credentials.createScoped(SCOPES).refreshIfExpired();
         }catch (Exception e){
             e.printStackTrace();
-        }
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY,
+            throw new RuntimeException(e);
+        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
                 new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
                 .setApplicationName(APPLICATION_NAME).build();
     }
@@ -156,9 +177,8 @@ public class GSapi<T> {
     public static class Builder<T>{
 
         private  String GOOGLE_SHEETS_ID;
-
         private final Class<T> RESOURCE_CLASS;
-        private  String APPLICATION_NAME;
+        private  String APPLICATION_NAME = "DSApi";
         private  String TOKENS_DIRECTORY_PATH = "tokens";
         private  String CREDS_STORE = "/credstore/creds.json";
         private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
@@ -197,11 +217,9 @@ public class GSapi<T> {
             this.RESOURCE_CLASS = RESOURCE_CLASS;
         }
 
-
-
         /**
          *
-         * @param APPLICATION_NAME Sets the application name
+         * @param APPLICATION_NAME Sets the application name default name is DSApi
          * @return Builder Object
          */
         public Builder<T> setAPPLICATION_NAME(String APPLICATION_NAME) {
@@ -248,9 +266,7 @@ public class GSapi<T> {
             this.IS_SERVICE_ACCOUNT = bool;
             return this;
         }
-
 }
-
     @Override
     public String toString() {
         return "GSapi{" +

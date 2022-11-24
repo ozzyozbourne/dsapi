@@ -51,4 +51,8 @@ public enum GSEnums {
      */
 
     FORMATTED_STRING,
+    /**
+     * Google sheets create new spreadsheetId
+     */
+    spreadsheetId,
 }
