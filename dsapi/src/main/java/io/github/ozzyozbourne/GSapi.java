@@ -13,9 +13,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.AppendValuesResponse;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
@@ -98,6 +96,44 @@ public class GSapi<T> {
                 .values()
                 .append(GOOGLE_SHEETS_ID, locationInSheets, new ValueRange().setValues(valueToBeAppended))
                 .setValueInputOption(GSEnums.USER_ENTERED.name()).setIncludeValuesInResponse(true).execute();
+    }
+
+    /**
+     *
+     * @param location location in sheets in A1 notation
+     * @return Google sheets ValueRange Object containing the response
+     * @throws IOException Throws an exception in case of failure
+     */
+    public ValueRange read(String location) throws IOException{
+       return sheetsService.spreadsheets().values().get(GOOGLE_SHEETS_ID, location).execute();
+    }
+
+    /**
+     *
+     * @param spreadsheet Configuration of the spreadsheet
+     * @return A new Google spreadsheet
+     * @throws IOException Throws an exception in case of failure
+     */
+    public Spreadsheet create(Spreadsheet spreadsheet) throws IOException {
+       return sheetsService.spreadsheets().create(spreadsheet).setFields(GSEnums.spreadsheetId.name()).execute();
+    }
+
+    /**
+     *
+     * @param spreadsheetProperties Properties of a new sheets to be created
+     * @return SpreadSheets object call create function to create a new sheet with this properties
+     */
+    public Spreadsheet defineSheet(SpreadsheetProperties spreadsheetProperties){
+        return new Spreadsheet().setProperties(spreadsheetProperties);
+    }
+
+    /**
+     *
+     * @param title Set the title of the sheet
+     * @return Sheets properties obj with new title
+     */
+    public SpreadsheetProperties getSheetPropertiesTitle(String title){
+        return new SpreadsheetProperties().setTitle(title);
     }
 
     private Credential authorize(){
