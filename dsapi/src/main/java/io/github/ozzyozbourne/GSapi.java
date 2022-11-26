@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +29,7 @@ import java.util.Objects;
 /**
  *
  * @author osaid khan
- * @version 3.1.0
+ * @version 4.0.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
@@ -110,30 +111,41 @@ public class GSapi<T> {
 
     /**
      *
-     * @param spreadsheet Configuration of the spreadsheet
-     * @return A new Google spreadsheet
+     * @param sheetList List of sheet contain the properties of the sheets
+     * @param title name of SpreadSheet
+     * @return A new SpreadSheet
      * @throws IOException Throws an exception in case of failure
      */
-    public Spreadsheet create(Spreadsheet spreadsheet) throws IOException {
-       return sheetsService.spreadsheets().create(spreadsheet).setFields(GSEnums.spreadsheetId.name()).execute();
+
+    public Spreadsheet createNewSpreadSheet(List<Sheet> sheetList,String title) throws IOException {
+        return sheetsService.spreadsheets()
+                .create(new Spreadsheet().setSheets(sheetList).setProperties(new SpreadsheetProperties().setTitle(title)))
+                .setFields(GSEnums.spreadsheetId.name()).execute();
     }
 
     /**
      *
-     * @param spreadsheetProperties Properties of a new sheets to be created
-     * @return SpreadSheets object call create function to create a new sheet with this properties
+     * @param title name of SpreadSheet
+     * @param tabNames List of the tabName need to created
+     * @return A new SpreadSheet
+     * @throws IOException Throws an exception in case of failure
      */
-    public Spreadsheet defineSheet(SpreadsheetProperties spreadsheetProperties){
-        return new Spreadsheet().setProperties(spreadsheetProperties);
+    public Spreadsheet createNewSpreadSheet(String title, List<String> tabNames) throws IOException {
+        return sheetsService.spreadsheets()
+                .create(new Spreadsheet().setSheets(createListOfSheets(createListOfSheetProperties(tabNames))).setProperties(new SpreadsheetProperties().setTitle(title)))
+                .setFields(GSEnums.spreadsheetId.name()).execute();
     }
 
-    /**
-     *
-     * @param title Set the title of the sheet
-     * @return Sheets properties obj with new title
-     */
-    public SpreadsheetProperties getSheetPropertiesTitle(String title){
-        return new SpreadsheetProperties().setTitle(title);
+    private List<Sheet> createListOfSheets(List<SheetProperties> sheetProperties){
+        List<Sheet> sheetList = new ArrayList<>();
+        sheetProperties.forEach(t->sheetList.add(new Sheet().setProperties(t)));
+        return  sheetList;
+    }
+
+    private List<SheetProperties> createListOfSheetProperties(List<String> tabNames){
+        List<SheetProperties> sheetProperties = new ArrayList<>();
+        tabNames.forEach(t-> sheetProperties.add(new SheetProperties().setTitle(t)));
+        return sheetProperties;
     }
 
     private Credential authorize(){

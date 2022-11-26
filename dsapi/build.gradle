@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.ozzyozbourne'
-version '3.1.0'
+version '4.0.0'
 
 repositories {
     mavenCentral()
@@ -38,7 +38,7 @@ publishing {
 
             groupId = 'io.github.ozzyozbourne'
             artifactId = 'dsapi'
-            version = '3.1.0'
+            version = '4.0.0'
             from components.java
 
             pom {
