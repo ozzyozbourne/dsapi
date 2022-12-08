@@ -2,7 +2,6 @@ package io.github.ozzyozbourne;
 
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import org.junit.jupiter.api.Assertions;
@@ -126,10 +125,10 @@ class LibraryTest {
                 .IS_SERVICE_ACCOUNT(false)
                 .setCREDS_STORE("/credstore/auth.json")
                 .build();
-      SpreadsheetProperties properties =  gsapi.getSheetPropertiesTitle("New");
-        Spreadsheet spreadsheet =  gsapi.defineSheet(properties);
-      spreadsheet =   gsapi.create(spreadsheet);
-        System.out.println(spreadsheet.getSpreadsheetId());
+        List<String> tabName  = Arrays.asList("TestOne", "TestTwo", "TestThree", "TestFour");
+       Spreadsheet spreadsheet =  gsapi.createNewSpreadSheet("Tester", tabName);
+       Assertions.assertNotNull(spreadsheet);
+        System.out.println(spreadsheet);
 
     }
 
