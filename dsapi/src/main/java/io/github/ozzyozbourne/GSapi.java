@@ -190,7 +190,7 @@ public class GSapi<T> {
         private  String GOOGLE_SHEETS_ID;
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME = "DSApi";
-        private  String TOKENS_DIRECTORY_PATH = "tokens";
+        private  String TOKENS_DIRECTORY_PATH = "tokens_sheets";
         private  String CREDS_STORE = "/credstore/creds.json";
         private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
         private boolean IS_SERVICE_ACCOUNT = true;

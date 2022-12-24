@@ -106,7 +106,7 @@ public class GDapi<T> {
 
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME = "DSApi";
-        private  String TOKENS_DIRECTORY_PATH = "tokens";
+        private  String TOKENS_DIRECTORY_PATH = "tokens_drive";
         private  String CREDS_STORE = "/credstore/creds.json";
         private  List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
         private boolean IS_SERVICE_ACCOUNT = true;
