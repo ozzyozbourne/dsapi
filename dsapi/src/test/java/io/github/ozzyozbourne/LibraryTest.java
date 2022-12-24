@@ -25,7 +25,7 @@ class LibraryTest {
                     .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                     .setAPPLICATION_NAME("Desktop client 1")
                     .setCREDS_STORE("/credstore/creds.json")
-                    .setSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
+                    .setSheetsSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
                     .IS_SERVICE_ACCOUNT(true)
                     .build();
 
