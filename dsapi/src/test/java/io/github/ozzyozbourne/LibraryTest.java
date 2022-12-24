@@ -15,44 +15,21 @@ import java.util.List;
 
 class LibraryTest {
 
-    DSapi<?> dsapi = DSapi.Builder.getBuilder(LibraryTest.class)
+    GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
             .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
             .build();
 
     @Test void gdApiServiceBuilderTestFull() {
 
-            DSapi<?> dsapi = DSapi.Builder.getBuilder(LibraryTest.class)
-                    .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
-                    .setAPPLICATION_NAME("Desktop client 1")
-                    .setCREDS_STORE("/credstore/creds.json")
-                    .setSheetsSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
-                    .IS_SERVICE_ACCOUNT(true)
-                    .build();
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
+                .setAPPLICATION_NAME("Desktop client 1")
+                .setCREDS_STORE("/credstore/creds.json")
+                .setSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
+                .IS_SERVICE_ACCOUNT(true)
+                .build();
 
-            System.out.println(dsapi);
-
-            List<List<Object>> data  = new ArrayList<>();
-
-            data.add(Arrays.asList("faker.animal().name()", "faker.name().firstName()", "faker.yoda().quote()"));
-            data.add(Arrays.asList("faker.chuckNorris().fact()", "faker.zelda().character()", "faker.ancient().god()"));
-
-            data.forEach(s->s.forEach(System.out::println));
-            try {
-              UpdateValuesResponse updateValuesResponse =  dsapi.update(data, "test!A1:C2");
-              System.out.println(updateValuesResponse.toPrettyString());
-            }catch (IOException e){
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-                Assertions.fail("[ASSERT FAILED] IO Exception");
-            }
-
-    }
-
-    @Test void gdApiServiceBuilderTest() {
-        DSapi<?> dsapi = DSapi.Builder.getBuilder(LibraryTest.class)
-                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
-
-        System.out.println(dsapi);
+        System.out.println(gsapi);
 
         List<List<Object>> data  = new ArrayList<>();
 
@@ -61,7 +38,30 @@ class LibraryTest {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  dsapi.update(data, "testTwo!A1:C2");
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "test!A1:C2");
+            System.out.println(updateValuesResponse.toPrettyString());
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            Assertions.fail("[ASSERT FAILED] IO Exception");
+        }
+
+    }
+
+    @Test void gdApiServiceBuilderTest() {
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
+
+        System.out.println(gsapi);
+
+        List<List<Object>> data  = new ArrayList<>();
+
+        data.add(Arrays.asList("faker.animal().name()", "faker.name().firstName()", "faker.yoda().quote()"));
+        data.add(Arrays.asList("faker.chuckNorris().fact()", "faker.zelda().character()", "faker.ancient().god()"));
+
+        data.forEach(s->s.forEach(System.out::println));
+        try {
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "testTwo!A1:C2");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -72,14 +72,14 @@ class LibraryTest {
 
     @Test void gdApiAuthBuilderTest() {
 
-        DSapi<?> dsapi = DSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/auth.json")
                 .IS_SERVICE_ACCOUNT(false)
                 .build();
 
-        System.out.println(dsapi);
+        System.out.println(gsapi);
 
         List<List<Object>> data  = new ArrayList<>();
 
@@ -88,7 +88,7 @@ class LibraryTest {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  dsapi.update(data, "auth!A1:C2");
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "auth!A1:C2");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -100,7 +100,7 @@ class LibraryTest {
     @Test void gdApiReadTest() {
 
         try {
-            ValueRange valueRange = dsapi.read("test!A1:C2");
+            ValueRange valueRange = gsapi.read("test!A1:C2");
             System.out.println(valueRange);
             valueRange.getValues().forEach(System.out::println);
         }catch (IOException e){
@@ -121,13 +121,13 @@ class LibraryTest {
     }
 
     @Test void gdApiCreateSheetTest() throws IOException {
-        DSapi<?> dsapi = DSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
                 .IS_SERVICE_ACCOUNT(false)
                 .setCREDS_STORE("/credstore/auth.json")
                 .build();
         List<String> tabName  = Arrays.asList("TestOne", "TestTwo", "TestThree", "TestFour");
-       Spreadsheet spreadsheet =  dsapi.createNewSpreadSheet("Tester", tabName);
-       Assertions.assertNotNull(spreadsheet);
+        Spreadsheet spreadsheet =  gsapi.createNewSpreadSheet("Tester", tabName);
+        Assertions.assertNotNull(spreadsheet);
         System.out.println(spreadsheet);
 
     }
@@ -140,7 +140,7 @@ class LibraryTest {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  dsapi.update(data, loc);
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, loc);
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -156,7 +156,7 @@ class LibraryTest {
         data.add(Arrays.asList("", "", ""));
 
         try {
-            UpdateValuesResponse updateValuesResponse =  dsapi.update(data, loc);
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, loc);
             System.out.println("VALUES DELETED");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
@@ -167,7 +167,7 @@ class LibraryTest {
 
     private void readEmpty(String loc) {
         try {
-            ValueRange valueRange = dsapi.read(loc);
+            ValueRange valueRange = gsapi.read(loc);
             System.out.println(valueRange);
             Assertions.assertNull(valueRange.getValues());
         }catch (IOException e){
@@ -179,7 +179,7 @@ class LibraryTest {
 
     private void read(String loc) {
         try {
-            ValueRange valueRange = dsapi.read(loc);
+            ValueRange valueRange = gsapi.read(loc);
             System.out.println(valueRange);
             Assertions.assertNotNull(valueRange.getValues());
             valueRange.getValues().forEach(System.out::println);
