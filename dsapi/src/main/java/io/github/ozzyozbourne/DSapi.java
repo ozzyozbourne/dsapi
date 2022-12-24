@@ -11,6 +11,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
@@ -33,13 +35,14 @@ import java.util.Objects;
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
-public class GSapi<T> {
+public class DSapi<T> {
     private final String GOOGLE_SHEETS_ID;
     private final String APPLICATION_NAME;
     private final String TOKENS_DIRECTORY_PATH;
     private final String CREDS_STORE;
     private final JsonFactory JSON_FACTORY;
-    private final List<String> SCOPES;
+    private final List<String> SHEETS_SCOPES;
+    private final List<String> DRIVE_SCOPES;
     private final NetHttpTransport netHttpTransport;
     /**
      * Exposing the sheets obj so users can build their own custom functions from it
@@ -48,17 +51,20 @@ public class GSapi<T> {
     private final  Class<T> RESOURCE_CLASS;
 
 
-    private GSapi(Builder<T> builder)  {
+    private DSapi(Builder<T> builder)  {
         this.GOOGLE_SHEETS_ID = builder.GOOGLE_SHEETS_ID;
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
         this.RESOURCE_CLASS = builder.RESOURCE_CLASS;
         this.TOKENS_DIRECTORY_PATH = builder.TOKENS_DIRECTORY_PATH;
         this.CREDS_STORE = builder.CREDS_STORE;
-        this.SCOPES = builder.SCOPES;
+        this.SHEETS_SCOPES = builder.SHEETS_SCOPES;
+        this.DRIVE_SCOPES = builder.DRIVE_SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
         this.netHttpTransport = getNetHttpTransPort();
         this.sheetsService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
     }
+
+
     private NetHttpTransport getNetHttpTransPort(){
         NetHttpTransport netHttpTransport;
         try {
@@ -154,7 +160,7 @@ public class GSapi<T> {
         try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.
                             load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
+            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SHEETS_SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline")
                     .build();
@@ -173,11 +179,24 @@ public class GSapi<T> {
         GoogleCredentials credentials;
         try {
             credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
-            credentials.createScoped(SCOPES).refreshIfExpired();
+            credentials.createScoped(SHEETS_SCOPES).refreshIfExpired();
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e);
         }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
+                new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
+                .setApplicationName(APPLICATION_NAME).build();
+    }
+
+    private Drive getDriveService(){
+        GoogleCredentials credentials;
+        try {
+            credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
+            credentials.createScoped(DRIVE_SCOPES).refreshIfExpired();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }return new Drive.Builder(netHttpTransport, JSON_FACTORY,
                 new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
                 .setApplicationName(APPLICATION_NAME).build();
     }
@@ -193,7 +212,8 @@ public class GSapi<T> {
         private  String APPLICATION_NAME = "DSApi";
         private  String TOKENS_DIRECTORY_PATH = "tokens";
         private  String CREDS_STORE = "/credstore/creds.json";
-        private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+        private  List<String> SHEETS_SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+        private  List<String> DRIVE_SCOPES = Collections.singletonList(DriveScopes.DRIVE);
         private boolean IS_SERVICE_ACCOUNT = true;
 
         /**
@@ -210,9 +230,9 @@ public class GSapi<T> {
          *
          * @return the Configured Google sheets object
          */
-        public GSapi<T> build()
+        public DSapi<T> build()
         {
-            return new GSapi<>(this);
+            return new DSapi<>(this);
         }
 
         /**
@@ -264,8 +284,18 @@ public class GSapi<T> {
          * @param SCOPES Sets the scope of sheets default is read and write both
          * @return Builder Object
          */
-        public Builder<T> setSCOPES(List<String> SCOPES) {
-            this.SCOPES = SCOPES;
+        public Builder<T> setSheetsSCOPES(List<String> SCOPES) {
+            this.SHEETS_SCOPES = SCOPES;
+            return this;
+        }
+
+        /**
+         *
+         * @param SCOPES Sets the scope of Drive default is all access
+         * @return Builder Object
+         */
+        public Builder<T> setDriveSCOPES(List<String> SCOPES) {
+            this.DRIVE_SCOPES = SCOPES;
             return this;
         }
 
@@ -279,6 +309,7 @@ public class GSapi<T> {
             return this;
         }
 }
+
     @Override
     public String toString() {
         return "GSapi{" +
@@ -287,7 +318,8 @@ public class GSapi<T> {
                 ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
                 ", CREDS_STORE='" + CREDS_STORE + '\'' +
                 ", JSON_FACTORY=" + JSON_FACTORY +
-                ", SCOPES=" + SCOPES +
+                ", SHEETS_SCOPES=" + SHEETS_SCOPES +
+                ", DRIVE_SCOPES=" + DRIVE_SCOPES +
                 ", netHttpTransport=" + netHttpTransport +
                 ", sheetsService=" + sheetsService +
                 ", RESOURCE_CLASS=" + RESOURCE_CLASS +
