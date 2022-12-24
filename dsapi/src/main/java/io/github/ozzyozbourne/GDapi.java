@@ -10,9 +10,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
@@ -29,7 +28,7 @@ import java.util.Objects;
  * @author osaid khan
  * @version 4.0.0
  * @param <T> Class containing the necessary credentials files
- * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
+ * A CRUD wrapper for Google drive Api that uses Objects as string for all CRUD operations
  */
 public class GDapi<T> {
     private final String APPLICATION_NAME;
@@ -39,9 +38,9 @@ public class GDapi<T> {
     private final List<String> SCOPES;
     private final NetHttpTransport netHttpTransport;
     /**
-     * Exposing the sheets obj so users can build their own custom functions from it
+     * Exposing the drive obj so users can build their own custom functions from it
      */
-    public  final Sheets sheetsService;
+    public  final Drive driveService;
     private final  Class<T> RESOURCE_CLASS;
 
 
@@ -53,7 +52,7 @@ public class GDapi<T> {
         this.SCOPES = builder.SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
         this.netHttpTransport = getNetHttpTransPort();
-        this.sheetsService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
+        this.driveService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
     }
     private NetHttpTransport getNetHttpTransPort(){
         NetHttpTransport netHttpTransport;
@@ -82,11 +81,11 @@ public class GDapi<T> {
         }return Objects.requireNonNull(credential);
     }
 
-    private Sheets getDSAuth(){
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
+    private Drive getDSAuth(){
+        return new  Drive.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
     }
 
-    private Sheets getDSService(){
+    private Drive getDSService(){
         GoogleCredentials credentials;
         try {
             credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
@@ -94,7 +93,7 @@ public class GDapi<T> {
         }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e);
-        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
+        }return new Drive.Builder(netHttpTransport, JSON_FACTORY,
                 new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
                 .setApplicationName(APPLICATION_NAME).build();
     }
@@ -124,7 +123,7 @@ public class GDapi<T> {
 
         /**
          *
-         * @return the Configured Google sheets object
+         * @return the Configured Google drive object
          */
         public GDapi<T> build()
         {
@@ -157,7 +156,7 @@ public class GDapi<T> {
 
         /**
          *
-         * @param CREDS_STORE sets the path to Google sheets credentials in the resource folder
+         * @param CREDS_STORE sets the path to Google drive credentials in the resource folder
          * @return Builder Object
          */
         public Builder<T> setCREDS_STORE(String CREDS_STORE) {
@@ -167,7 +166,7 @@ public class GDapi<T> {
 
         /**
          *
-         * @param SCOPES Sets the scope of sheets default is read and write both
+         * @param SCOPES Sets the scope of drive default is read and write both
          * @return Builder Object
          */
         public Builder<T> setSCOPES(List<String> SCOPES) {
@@ -185,16 +184,17 @@ public class GDapi<T> {
             return this;
         }
     }
+
     @Override
     public String toString() {
-        return "GSapi{" +
-                ", APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
+        return "GDapi{" +
+                "APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
                 ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
                 ", CREDS_STORE='" + CREDS_STORE + '\'' +
                 ", JSON_FACTORY=" + JSON_FACTORY +
                 ", SCOPES=" + SCOPES +
                 ", netHttpTransport=" + netHttpTransport +
-                ", sheetsService=" + sheetsService +
+                ", driveService=" + driveService +
                 ", RESOURCE_CLASS=" + RESOURCE_CLASS +
                 '}';
     }

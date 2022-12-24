@@ -13,15 +13,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class LibraryTest {
+class LibraryTestSheets {
 
-    GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+    GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
             .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
             .build();
 
     @Test void gdApiServiceBuilderTestFull() {
 
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/creds.json")
@@ -49,7 +49,7 @@ class LibraryTest {
     }
 
     @Test void gdApiServiceBuilderTest() {
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
 
         System.out.println(gsapi);
@@ -72,7 +72,7 @@ class LibraryTest {
 
     @Test void gdApiAuthBuilderTest() {
 
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/auth.json")
@@ -121,7 +121,7 @@ class LibraryTest {
     }
 
     @Test void gdApiCreateSheetTest() throws IOException {
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .IS_SERVICE_ACCOUNT(false)
                 .setCREDS_STORE("/credstore/auth.json")
                 .build();
