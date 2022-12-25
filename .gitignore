@@ -6,6 +6,7 @@ build
 .idea/
 tokens_sheets/
 tokens_drive/
+drivedownloads/
 #file not needed to be pushed tp git
 gradle.properties
 **.json

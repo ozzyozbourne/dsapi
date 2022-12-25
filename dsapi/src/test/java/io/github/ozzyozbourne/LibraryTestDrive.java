@@ -1,16 +1,9 @@
 package io.github.ozzyozbourne;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 
 public class LibraryTestDrive {
@@ -18,15 +11,9 @@ public class LibraryTestDrive {
 
     @Test
     public void driveTestRead() throws IOException {
-        GDapi<?> gDapi = GDapi.Builder.getBuilder(LibraryTestDrive.class)
-                .setSCOPES( Collections.singletonList( DriveScopes.DRIVE_METADATA_READONLY))
-                .build();
+        GDapi<?> gDapi = GDapi.Builder.getBuilder(LibraryTestDrive.class).build();
 
-        FileList result = gDapi.driveService.files().list()
-                .setPageSize(10)
-                .setFields("nextPageToken, files(id, name)")
-                .execute();
-        List<File> files = result.getFiles();
+        List<File> files = gDapi.getFiles("40");
         if (files == null || files.isEmpty()) {
             System.out.println("No files found.");
         } else {
@@ -42,15 +29,8 @@ public class LibraryTestDrive {
     @Test
     public void driveTestDowload() throws IOException {
         GDapi<?> gDapi = GDapi.Builder.getBuilder(LibraryTestDrive.class).build();
-        try {
-            OutputStream outputStream = Files.newOutputStream(Paths.get("src/test/resources/drivedownloads/thefilename.xlsx"));
-                gDapi.driveService.files().export("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0",
-                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    .executeMediaAndDownloadTo(outputStream);
-        } catch (GoogleJsonResponseException e) {
-            System.err.println("Unable to move file: " + e.getDetails());
-            throw e;
-        }
+        gDapi.downloadFile("1SUtwQlc_quPwMIthI9dOZwBA1QBxNPNE7eL84XXlcBA",GDEnums.DOCX.toString() ,
+                "src/test/resources/drivedownloads/LOR_Osaid Khan.docx");
 
     }
 

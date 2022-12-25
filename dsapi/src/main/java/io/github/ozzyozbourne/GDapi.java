@@ -6,18 +6,22 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
@@ -83,6 +87,36 @@ public class GDapi<T> {
 
     private Drive getDSAuth(){
         return new  Drive.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
+    }
+
+    /**
+     *
+     * @param pageSize No of Results to be returned
+     * @return List of files
+     * @throws IOException Throws an exception in case of failure
+     */
+
+    public List<File> getFiles(String pageSize) throws IOException {
+        return driveService.files().list().setPageSize(40).setFields("nextPageToken, files(id, name)")
+                .execute().getFiles();
+    }
+
+    /**
+     *
+     * @param id Name of the resource to be downloaded
+     * @param type Type of the resource ie txt, csv etc
+     * @param location Location in the users disk to be stored
+     * @throws IOException Throws an exception in case of failure
+     */
+
+    public void downloadFile(String id, String type, String location)throws IOException {
+
+        try (OutputStream outputStream = Files.newOutputStream(Paths.get(location))){
+            driveService.files().export(id, type).executeMediaAndDownloadTo(outputStream);
+        }catch (GoogleJsonResponseException e) {
+            System.out.println("Error Occurred" + e.getDetails());
+            throw e;
+    }
     }
 
     /**
