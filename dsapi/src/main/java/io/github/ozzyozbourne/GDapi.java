@@ -52,7 +52,7 @@ public class GDapi<T> {
         this.SCOPES = builder.SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
         this.netHttpTransport = getNetHttpTransPort();
-        this.driveService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
+        this.driveService = getDSAuth();
     }
     private NetHttpTransport getNetHttpTransPort(){
         NetHttpTransport netHttpTransport;
@@ -85,19 +85,6 @@ public class GDapi<T> {
         return new  Drive.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
     }
 
-    private Drive getDSService(){
-        GoogleCredentials credentials;
-        try {
-            credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
-            credentials.createScoped(SCOPES).refreshIfExpired();
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return new Drive.Builder(netHttpTransport, JSON_FACTORY,
-                new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
-                .setApplicationName(APPLICATION_NAME).build();
-    }
-
     /**
      *
      * @param <T> Class containing the necessary credentials files
@@ -107,9 +94,8 @@ public class GDapi<T> {
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME = "DSApi";
         private  String TOKENS_DIRECTORY_PATH = "tokens_drive";
-        private  String CREDS_STORE = "/credstore/creds.json";
+        private  String CREDS_STORE = "/credstore/auth.json";
         private  List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-        private boolean IS_SERVICE_ACCOUNT = true;
 
         /**
          *
@@ -174,15 +160,6 @@ public class GDapi<T> {
             return this;
         }
 
-        /**
-         *
-         * @param bool Sets which authorisation flow to use Default is service account flow
-         * @return Builder Object
-         */
-        public Builder<T> IS_SERVICE_ACCOUNT(boolean bool) {
-            this.IS_SERVICE_ACCOUNT = bool;
-            return this;
-        }
     }
 
     @Override
