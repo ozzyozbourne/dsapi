@@ -1,4 +1,3 @@
-
 package io.github.ozzyozbourne;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -106,7 +105,7 @@ public class GSapi<T> {
      * @throws IOException Throws an exception in case of failure
      */
     public ValueRange read(String location) throws IOException{
-       return sheetsService.spreadsheets().values().get(GOOGLE_SHEETS_ID, location).execute();
+        return sheetsService.spreadsheets().values().get(GOOGLE_SHEETS_ID, location).execute();
     }
 
     /**
@@ -153,7 +152,7 @@ public class GSapi<T> {
         Credential credential;
         try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
             GoogleClientSecrets clientSecrets = GoogleClientSecrets.
-                            load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
+                    load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
             GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
                     .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
                     .setAccessType("offline")
@@ -191,7 +190,7 @@ public class GSapi<T> {
         private  String GOOGLE_SHEETS_ID;
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME = "DSApi";
-        private  String TOKENS_DIRECTORY_PATH = "tokens";
+        private  String TOKENS_DIRECTORY_PATH = "tokens_sheets";
         private  String CREDS_STORE = "/credstore/creds.json";
         private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
         private boolean IS_SERVICE_ACCOUNT = true;
@@ -278,7 +277,7 @@ public class GSapi<T> {
             this.IS_SERVICE_ACCOUNT = bool;
             return this;
         }
-}
+    }
     @Override
     public String toString() {
         return "GSapi{" +

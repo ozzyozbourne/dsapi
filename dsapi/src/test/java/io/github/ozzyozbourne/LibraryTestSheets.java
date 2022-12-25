@@ -13,43 +13,43 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class LibraryTest {
+class LibraryTestSheets {
 
-    GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+    GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
             .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
             .build();
 
     @Test void gdApiServiceBuilderTestFull() {
 
-            GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
-                    .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
-                    .setAPPLICATION_NAME("Desktop client 1")
-                    .setCREDS_STORE("/credstore/creds.json")
-                    .setSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
-                    .IS_SERVICE_ACCOUNT(true)
-                    .build();
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
+                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
+                .setAPPLICATION_NAME("Desktop client 1")
+                .setCREDS_STORE("/credstore/creds.json")
+                .setSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
+                .IS_SERVICE_ACCOUNT(true)
+                .build();
 
-            System.out.println(gsapi);
+        System.out.println(gsapi);
 
-            List<List<Object>> data  = new ArrayList<>();
+        List<List<Object>> data  = new ArrayList<>();
 
-            data.add(Arrays.asList("faker.animal().name()", "faker.name().firstName()", "faker.yoda().quote()"));
-            data.add(Arrays.asList("faker.chuckNorris().fact()", "faker.zelda().character()", "faker.ancient().god()"));
+        data.add(Arrays.asList("faker.animal().name()", "faker.name().firstName()", "faker.yoda().quote()"));
+        data.add(Arrays.asList("faker.chuckNorris().fact()", "faker.zelda().character()", "faker.ancient().god()"));
 
-            data.forEach(s->s.forEach(System.out::println));
-            try {
-              UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "test!A1:C2");
-              System.out.println(updateValuesResponse.toPrettyString());
-            }catch (IOException e){
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-                Assertions.fail("[ASSERT FAILED] IO Exception");
-            }
+        data.forEach(s->s.forEach(System.out::println));
+        try {
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "test!A1:C2");
+            System.out.println(updateValuesResponse.toPrettyString());
+        }catch (IOException e){
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            Assertions.fail("[ASSERT FAILED] IO Exception");
+        }
 
     }
 
     @Test void gdApiServiceBuilderTest() {
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
 
         System.out.println(gsapi);
@@ -72,7 +72,7 @@ class LibraryTest {
 
     @Test void gdApiAuthBuilderTest() {
 
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/auth.json")
@@ -121,13 +121,13 @@ class LibraryTest {
     }
 
     @Test void gdApiCreateSheetTest() throws IOException {
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTest.class)
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
                 .IS_SERVICE_ACCOUNT(false)
                 .setCREDS_STORE("/credstore/auth.json")
                 .build();
         List<String> tabName  = Arrays.asList("TestOne", "TestTwo", "TestThree", "TestFour");
-       Spreadsheet spreadsheet =  gsapi.createNewSpreadSheet("Tester", tabName);
-       Assertions.assertNotNull(spreadsheet);
+        Spreadsheet spreadsheet =  gsapi.createNewSpreadSheet("Tester", tabName);
+        Assertions.assertNotNull(spreadsheet);
         System.out.println(spreadsheet);
 
     }
