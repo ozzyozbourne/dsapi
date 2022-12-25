@@ -1,4 +1,4 @@
-package io.github.ozzyozbourne;
+package io.github.ozzyozbourne.enums;
 
 /**
  * All sheets Enums

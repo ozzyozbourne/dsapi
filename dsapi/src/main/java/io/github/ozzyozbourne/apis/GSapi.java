@@ -1,4 +1,4 @@
-package io.github.ozzyozbourne;
+package io.github.ozzyozbourne.apis;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -15,6 +15,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import io.github.ozzyozbourne.enums.GSEnums;
 
 import java.io.IOException;
 import java.io.InputStream;

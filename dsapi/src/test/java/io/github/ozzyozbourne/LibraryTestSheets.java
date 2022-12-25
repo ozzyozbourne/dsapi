@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import io.github.ozzyozbourne.apis.GSapi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

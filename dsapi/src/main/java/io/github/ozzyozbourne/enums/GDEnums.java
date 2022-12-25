@@ -1,4 +1,4 @@
-package io.github.ozzyozbourne;
+package io.github.ozzyozbourne.enums;
 
 public enum GDEnums {
 
