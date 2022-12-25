@@ -45,7 +45,7 @@ publishing {
 
             pom {
                 name = 'dsapi'
-                description = 'Google sheets CRUD with ease'
+                description = 'Google sheets and drive CRUD with ease'
                 url = 'https://github.com/ozzyozbourne/dsapi'
                 inceptionYear = '2022'
 
