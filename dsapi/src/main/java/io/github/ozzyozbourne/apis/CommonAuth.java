@@ -9,6 +9,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +30,7 @@ final class CommonAuth {
         }return Objects.requireNonNull(netHttpTransport);
     }
 
-   static  <T> Credential authorize(Class<T> RESOURCE_CLASS, String CREDS_STORE, JsonFactory JSON_FACTORY, NetHttpTransport netHttpTransport, List<String> SCOPES, String TOKENS_DIRECTORY_PATH){
+   static <T> Credential authorize(Class<T> RESOURCE_CLASS, String CREDS_STORE, JsonFactory JSON_FACTORY, NetHttpTransport netHttpTransport, List<String> SCOPES, String TOKENS_DIRECTORY_PATH){
 
         Credential credential;
         try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
@@ -45,5 +46,17 @@ final class CommonAuth {
             throw new RuntimeException(e);
         }return Objects.requireNonNull(credential);
     }
+
+   static <T> GoogleCredentials getGoogleCredentials(Class<T> RESOURCE_CLASS, String CREDS_STORE, List<String> SCOPES) {
+       GoogleCredentials credentials;
+       try {
+           credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
+           credentials.createScoped(SCOPES).refreshIfExpired();
+       } catch (Exception e) {
+           e.printStackTrace();
+           throw new RuntimeException(e);
+       }
+       return credentials;
+   }
 
 }

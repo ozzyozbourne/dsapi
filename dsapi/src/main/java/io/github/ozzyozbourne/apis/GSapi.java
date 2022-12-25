@@ -7,7 +7,6 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
 import io.github.ozzyozbourne.enums.GSEnums;
 
 import java.io.IOException;
@@ -37,8 +36,6 @@ public class GSapi<T> {
     public  final Sheets sheetsService;
     private final  Class<T> RESOURCE_CLASS;
 
-
-
     private GSapi(Builder<T> builder)  {
         this.GOOGLE_SHEETS_ID = builder.GOOGLE_SHEETS_ID;
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
@@ -58,15 +55,8 @@ public class GSapi<T> {
     }
 
     private Sheets getDSService(){
-        GoogleCredentials credentials;
-        try {
-            credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
-            credentials.createScoped(SCOPES).refreshIfExpired();
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
-                new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
+        return new Sheets.Builder(netHttpTransport, JSON_FACTORY,new HttpCredentialsAdapter
+                (Objects.requireNonNull(CommonAuth.getGoogleCredentials(RESOURCE_CLASS, CREDS_STORE, SCOPES))))
                 .setApplicationName(APPLICATION_NAME).build();
     }
 
