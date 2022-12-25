@@ -1,26 +1,21 @@
 package io.github.ozzyozbourne.apis;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
+/**
+ *
+ * @author osaid khan
+ * @version 4.2.0
+ * @param <T> Class containing the necessary credentials files
+ * A CRUD wrapper for Gmail Api that uses Objects as string for all CRUD operations
+ */
 public class GMapi <T> {
     private final String APPLICATION_NAME;
     private final String TOKENS_DIRECTORY_PATH;
@@ -34,7 +29,6 @@ public class GMapi <T> {
     public  final Gmail gmailService;
     private final  Class<T> RESOURCE_CLASS;
 
-
     private GMapi(GMapi.Builder<T> builder)  {
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
         this.RESOURCE_CLASS = builder.RESOURCE_CLASS;
@@ -42,38 +36,14 @@ public class GMapi <T> {
         this.CREDS_STORE = builder.CREDS_STORE;
         this.SCOPES = builder.SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
-        this.netHttpTransport = getNetHttpTransPort();
+        this.netHttpTransport = CommonAuth.getNetHttpTransPort();
         this.gmailService = getDSAuth();
-    }
-    private NetHttpTransport getNetHttpTransPort(){
-        NetHttpTransport netHttpTransport;
-        try {
-            netHttpTransport =  GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return Objects.requireNonNull(netHttpTransport);
-    }
-
-    private Credential authorize(){
-
-        Credential credential;
-        try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.
-                    load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
-                    .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                    .setAccessType("offline")
-                    .build();
-            credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return Objects.requireNonNull(credential);
     }
 
     private Gmail getDSAuth(){
-        return new  Gmail.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
+        return new Gmail.Builder(netHttpTransport, JSON_FACTORY,
+                CommonAuth.authorize(RESOURCE_CLASS, CREDS_STORE, JSON_FACTORY, netHttpTransport, SCOPES, TOKENS_DIRECTORY_PATH))
+                .setApplicationName(APPLICATION_NAME).build();
     }
 
     /**

@@ -1,15 +1,8 @@
 package io.github.ozzyozbourne.apis;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
@@ -18,9 +11,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import io.github.ozzyozbourne.enums.GSEnums;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +19,7 @@ import java.util.Objects;
 /**
  *
  * @author osaid khan
- * @version 4.0.0
+ * @version 4.2.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
@@ -48,6 +38,7 @@ public class GSapi<T> {
     private final  Class<T> RESOURCE_CLASS;
 
 
+
     private GSapi(Builder<T> builder)  {
         this.GOOGLE_SHEETS_ID = builder.GOOGLE_SHEETS_ID;
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
@@ -56,17 +47,27 @@ public class GSapi<T> {
         this.CREDS_STORE = builder.CREDS_STORE;
         this.SCOPES = builder.SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
-        this.netHttpTransport = getNetHttpTransPort();
+        this.netHttpTransport = CommonAuth.getNetHttpTransPort();
         this.sheetsService = builder.IS_SERVICE_ACCOUNT?getDSService():getDSAuth();
     }
-    private NetHttpTransport getNetHttpTransPort(){
-        NetHttpTransport netHttpTransport;
+
+    private Sheets getDSAuth(){
+        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY,
+                CommonAuth.authorize(RESOURCE_CLASS, CREDS_STORE, JSON_FACTORY, netHttpTransport, SCOPES, TOKENS_DIRECTORY_PATH))
+                .setApplicationName(APPLICATION_NAME).build();
+    }
+
+    private Sheets getDSService(){
+        GoogleCredentials credentials;
         try {
-            netHttpTransport =  GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException | IOException e) {
+            credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
+            credentials.createScoped(SCOPES).refreshIfExpired();
+        }catch (Exception e){
             e.printStackTrace();
             throw new RuntimeException(e);
-        }return Objects.requireNonNull(netHttpTransport);
+        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
+                new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
+                .setApplicationName(APPLICATION_NAME).build();
     }
 
     /**
@@ -148,39 +149,7 @@ public class GSapi<T> {
         return sheetProperties;
     }
 
-    private Credential authorize(){
 
-        Credential credential;
-        try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.
-                    load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
-                    .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                    .setAccessType("offline")
-                    .build();
-            credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return Objects.requireNonNull(credential);
-    }
-
-    private Sheets getDSAuth(){
-        return new  Sheets.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
-    }
-
-    private Sheets getDSService(){
-        GoogleCredentials credentials;
-        try {
-            credentials = GoogleCredentials.fromStream(Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE)));
-            credentials.createScoped(SCOPES).refreshIfExpired();
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return new Sheets.Builder(netHttpTransport, JSON_FACTORY,
-                new HttpCredentialsAdapter(Objects.requireNonNull(credentials)))
-                .setApplicationName(APPLICATION_NAME).build();
-    }
 
     /**
      *

@@ -1,35 +1,24 @@
 package io.github.ozzyozbourne.apis;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  *
  * @author osaid khan
- * @version 4.0.0
+ * @version 4.2.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google drive Api that uses Objects as string for all CRUD operations
  */
@@ -46,7 +35,6 @@ public class GDapi<T> {
     public  final Drive driveService;
     private final  Class<T> RESOURCE_CLASS;
 
-
     private GDapi(Builder<T> builder)  {
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
         this.RESOURCE_CLASS = builder.RESOURCE_CLASS;
@@ -54,38 +42,14 @@ public class GDapi<T> {
         this.CREDS_STORE = builder.CREDS_STORE;
         this.SCOPES = builder.SCOPES;
         this.JSON_FACTORY = GsonFactory.getDefaultInstance();
-        this.netHttpTransport = getNetHttpTransPort();
+        this.netHttpTransport = CommonAuth.getNetHttpTransPort();
         this.driveService = getDSAuth();
-    }
-    private NetHttpTransport getNetHttpTransPort(){
-        NetHttpTransport netHttpTransport;
-        try {
-            netHttpTransport =  GoogleNetHttpTransport.newTrustedTransport();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return Objects.requireNonNull(netHttpTransport);
-    }
-
-    private Credential authorize(){
-
-        Credential credential;
-        try(InputStream inputStream = Objects.requireNonNull(RESOURCE_CLASS.getResourceAsStream(CREDS_STORE))){
-            GoogleClientSecrets clientSecrets = GoogleClientSecrets.
-                    load(JSON_FACTORY, new InputStreamReader(Objects.requireNonNull(inputStream)));
-            GoogleAuthorizationCodeFlow flow  = new GoogleAuthorizationCodeFlow.Builder(netHttpTransport , JSON_FACTORY, clientSecrets, SCOPES)
-                    .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                    .setAccessType("offline")
-                    .build();
-            credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }return Objects.requireNonNull(credential);
     }
 
     private Drive getDSAuth(){
-        return new  Drive.Builder(netHttpTransport, JSON_FACTORY, authorize()).setApplicationName(APPLICATION_NAME).build();
+        return new  Drive.Builder(netHttpTransport, JSON_FACTORY,
+                CommonAuth.authorize(RESOURCE_CLASS, CREDS_STORE, JSON_FACTORY, netHttpTransport, SCOPES, TOKENS_DIRECTORY_PATH))
+                .setApplicationName(APPLICATION_NAME).build();
     }
 
     /**
