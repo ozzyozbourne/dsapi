@@ -1,5 +1,9 @@
 package io.github.ozzyozbourne.enums;
 
+
+/**
+ * ENUMS for google drive
+ */
 public enum GDEnums {
 
     /**
