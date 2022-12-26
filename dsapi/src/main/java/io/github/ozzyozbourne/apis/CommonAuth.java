@@ -20,6 +20,10 @@ import java.util.Objects;
 
 final class CommonAuth {
 
+    /**
+     *
+     * @return NetHttpTransport for communication
+     */
    public static NetHttpTransport getNetHttpTransPort(){
         NetHttpTransport netHttpTransport;
         try {
@@ -29,6 +33,18 @@ final class CommonAuth {
             throw new RuntimeException(e);
         }return Objects.requireNonNull(netHttpTransport);
     }
+
+    /**
+     *
+     * @param RESOURCE_CLASS Class containing the credentials in resource path for authentication
+     * @param CREDS_STORE Location of the folder contains the creds.json
+     * @param JSON_FACTORY GOOGLE JSON factory for communication
+     * @param netHttpTransport NetHttpTransport for communication
+     * @param SCOPES List of Scopes for the APIs
+     * @param TOKENS_DIRECTORY_PATH location in disk to store the generated tokens
+     * @return Credentials Object for authentication
+     * @param <T> Variable of the class of type T
+     */
 
    public static <T> Credential authorize(Class<T> RESOURCE_CLASS, String CREDS_STORE, JsonFactory JSON_FACTORY, NetHttpTransport netHttpTransport, List<String> SCOPES, String TOKENS_DIRECTORY_PATH){
 
@@ -46,6 +62,15 @@ final class CommonAuth {
             throw new RuntimeException(e);
         }return Objects.requireNonNull(credential);
     }
+
+    /**
+     *
+     * @param RESOURCE_CLASS Class containing the credentials in resource path for authentication
+     * @param CREDS_STORE Location of the folder contains the creds.json
+     * @param SCOPES List of Scopes for the APIs
+     * @return GoogleCredentials for authentication
+     * @param <T> Variable of the class of type T
+     */
 
    public static <T> GoogleCredentials getGoogleCredentials(Class<T> RESOURCE_CLASS, String CREDS_STORE, List<String> SCOPES) {
        GoogleCredentials credentials;
