@@ -143,4 +143,17 @@ public class GDCapi<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        return "GDCapi{" +
+                "APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
+                ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
+                ", CREDS_STORE='" + CREDS_STORE + '\'' +
+                ", JSON_FACTORY=" + JSON_FACTORY +
+                ", SCOPES=" + SCOPES +
+                ", netHttpTransport=" + netHttpTransport +
+                ", docsService=" + docsService +
+                ", RESOURCE_CLASS=" + RESOURCE_CLASS +
+                '}';
+    }
 }
