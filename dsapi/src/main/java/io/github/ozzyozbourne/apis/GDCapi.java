@@ -4,6 +4,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.docs.v1.Docs;
+import com.google.api.services.docs.v1.DocsScopes;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.auth.http.HttpCredentialsAdapter;
 
@@ -65,7 +66,7 @@ public class GDCapi<T> {
         private  String APPLICATION_NAME = "DSApi";
         private  String TOKENS_DIRECTORY_PATH = "tokens_docs";
         private  String CREDS_STORE = "/credstore/creds.json";
-        private  List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS);
+        private  List<String> SCOPES = Collections.singletonList(DocsScopes.DOCUMENTS);
         private boolean IS_SERVICE_ACCOUNT = true;
 
         /**
