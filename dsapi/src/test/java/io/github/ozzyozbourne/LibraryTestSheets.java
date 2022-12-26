@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import io.github.ozzyozbourne.apis.GSapi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,14 +16,14 @@ import java.util.List;
 
 class LibraryTestSheets {
 
+    String GOOGLE_SHEET_ID = "1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0";
+
     GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
-            .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
             .build();
 
     @Test void gdApiServiceBuilderTestFull() {
 
         GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
-                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/creds.json")
                 .setSCOPES(Collections.singletonList(SheetsScopes.SPREADSHEETS))
@@ -38,7 +39,7 @@ class LibraryTestSheets {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "test!A1:C2");
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, GOOGLE_SHEET_ID, "test!A1:C2");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -49,8 +50,7 @@ class LibraryTestSheets {
     }
 
     @Test void gdApiServiceBuilderTest() {
-        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
-                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0").build();
+        GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class).build();
 
         System.out.println(gsapi);
 
@@ -61,7 +61,7 @@ class LibraryTestSheets {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "testTwo!A1:C2");
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, GOOGLE_SHEET_ID,"testTwo!A1:C2");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -73,7 +73,6 @@ class LibraryTestSheets {
     @Test void gdApiAuthBuilderTest() {
 
         GSapi<?> gsapi = GSapi.Builder.getBuilder(LibraryTestSheets.class)
-                .setGOOGLE_SHEETS_ID("1Pmw6JI3Z0Wd5af-ox-D3AnX7fbvUcEhXv7SkpjfiVo0")
                 .setAPPLICATION_NAME("Desktop client 1")
                 .setCREDS_STORE("/credstore/auth.json")
                 .IS_SERVICE_ACCOUNT(false)
@@ -88,7 +87,7 @@ class LibraryTestSheets {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, "auth!A1:C2");
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, GOOGLE_SHEET_ID,"auth!A1:C2");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -100,7 +99,7 @@ class LibraryTestSheets {
     @Test void gdApiReadTest() {
 
         try {
-            ValueRange valueRange = gsapi.read("test!A1:C2");
+            ValueRange valueRange = gsapi.read(GOOGLE_SHEET_ID, "test!A1:C2");
             System.out.println(valueRange);
             valueRange.getValues().forEach(System.out::println);
         }catch (IOException e){
@@ -140,7 +139,7 @@ class LibraryTestSheets {
 
         data.forEach(s->s.forEach(System.out::println));
         try {
-            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, loc);
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, GOOGLE_SHEET_ID,loc);
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
             e.printStackTrace();
@@ -156,7 +155,7 @@ class LibraryTestSheets {
         data.add(Arrays.asList("", "", ""));
 
         try {
-            UpdateValuesResponse updateValuesResponse =  gsapi.update(data, loc);
+            UpdateValuesResponse updateValuesResponse =  gsapi.update(data,GOOGLE_SHEET_ID,  loc);
             System.out.println("VALUES DELETED");
             System.out.println(updateValuesResponse.toPrettyString());
         }catch (IOException e){
@@ -167,7 +166,7 @@ class LibraryTestSheets {
 
     private void readEmpty(String loc) {
         try {
-            ValueRange valueRange = gsapi.read(loc);
+            ValueRange valueRange = gsapi.read(GOOGLE_SHEET_ID, loc);
             System.out.println(valueRange);
             Assertions.assertNull(valueRange.getValues());
         }catch (IOException e){
@@ -179,7 +178,7 @@ class LibraryTestSheets {
 
     private void read(String loc) {
         try {
-            ValueRange valueRange = gsapi.read(loc);
+            ValueRange valueRange = gsapi.read(GOOGLE_SHEET_ID, loc);
             System.out.println(valueRange);
             Assertions.assertNotNull(valueRange.getValues());
             valueRange.getValues().forEach(System.out::println);
