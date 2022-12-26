@@ -23,7 +23,6 @@ import java.util.Objects;
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
 public class GSapi<T> {
-    private final String GOOGLE_SHEETS_ID;
     private final String APPLICATION_NAME;
     private final String TOKENS_DIRECTORY_PATH;
     private final String CREDS_STORE;
@@ -37,7 +36,7 @@ public class GSapi<T> {
     private final  Class<T> RESOURCE_CLASS;
 
     private GSapi(Builder<T> builder)  {
-        this.GOOGLE_SHEETS_ID = builder.GOOGLE_SHEETS_ID;
+
         this.APPLICATION_NAME = builder.APPLICATION_NAME;
         this.RESOURCE_CLASS = builder.RESOURCE_CLASS;
         this.TOKENS_DIRECTORY_PATH = builder.TOKENS_DIRECTORY_PATH;
@@ -64,11 +63,12 @@ public class GSapi<T> {
      *
      * To Update values in a sheet
      * @param valueToBeUploaded value that user want to upload to the Google sheets
+     * @param GOOGLE_SHEETS_ID id of the sheet
      * @param locationInSheets location in sheets in A1 notation
      * @return response of the api
      * @throws IOException Throws an exception in case of failure
      */
-    public UpdateValuesResponse update(List<List<Object>> valueToBeUploaded, String locationInSheets) throws IOException {
+    public UpdateValuesResponse update(List<List<Object>> valueToBeUploaded, String GOOGLE_SHEETS_ID, String locationInSheets) throws IOException {
         return  sheetsService.spreadsheets()
                 .values()
                 .update(GOOGLE_SHEETS_ID, locationInSheets, new ValueRange().setValues(valueToBeUploaded))
@@ -79,11 +79,12 @@ public class GSapi<T> {
      *
      * To append values to a desired location in Google sheets
      * @param valueToBeAppended value that user want to upload to the Google sheets
+     * @param GOOGLE_SHEETS_ID id of the sheet
      * @param locationInSheets location in sheets in A1 notation
      * @return response of the api
      * @throws IOException Throws an exception in case of failure
      */
-    public AppendValuesResponse append(List<List<Object>> valueToBeAppended, String locationInSheets) throws IOException {
+    public AppendValuesResponse append(List<List<Object>> valueToBeAppended, String GOOGLE_SHEETS_ID, String locationInSheets) throws IOException {
         return  sheetsService.spreadsheets()
                 .values()
                 .append(GOOGLE_SHEETS_ID, locationInSheets, new ValueRange().setValues(valueToBeAppended))
@@ -92,11 +93,12 @@ public class GSapi<T> {
 
     /**
      *
+     * @param GOOGLE_SHEETS_ID id of the sheet
      * @param location location in sheets in A1 notation
      * @return Google sheets ValueRange Object containing the response
      * @throws IOException Throws an exception in case of failure
      */
-    public ValueRange read(String location) throws IOException{
+    public ValueRange read(String GOOGLE_SHEETS_ID, String location) throws IOException{
         return sheetsService.spreadsheets().values().get(GOOGLE_SHEETS_ID, location).execute();
     }
 
@@ -147,7 +149,6 @@ public class GSapi<T> {
      */
     public static class Builder<T>{
 
-        private  String GOOGLE_SHEETS_ID;
         private final Class<T> RESOURCE_CLASS;
         private  String APPLICATION_NAME = "DSApi";
         private  String TOKENS_DIRECTORY_PATH = "tokens_sheets";
@@ -172,16 +173,6 @@ public class GSapi<T> {
         public GSapi<T> build()
         {
             return new GSapi<>(this);
-        }
-
-        /**
-         *
-         * @param GOOGLE_SHEETS_ID Sets the Google sheets id
-         * @return Builder Object
-         */
-        public Builder<T> setGOOGLE_SHEETS_ID(String GOOGLE_SHEETS_ID) {
-            this.GOOGLE_SHEETS_ID = GOOGLE_SHEETS_ID;
-            return this;
         }
 
         private Builder(Class<T> RESOURCE_CLASS ) {
@@ -238,11 +229,11 @@ public class GSapi<T> {
             return this;
         }
     }
+
     @Override
     public String toString() {
         return "GSapi{" +
-                "GOOGLE_SHEETS_ID='" + GOOGLE_SHEETS_ID + '\'' +
-                ", APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
+                "APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
                 ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
                 ", CREDS_STORE='" + CREDS_STORE + '\'' +
                 ", JSON_FACTORY=" + JSON_FACTORY +
