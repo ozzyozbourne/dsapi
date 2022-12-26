@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.github.ozzyozbourne'
-version '4.2.0'
+version '5.0.0'
 
 repositories {
     mavenCentral()
@@ -42,12 +42,12 @@ publishing {
 
             groupId = 'io.github.ozzyozbourne'
             artifactId = 'dsapi'
-            version = '4.2.0'
+            version = '5.0.0'
             from components.java
 
             pom {
                 name = 'dsapi'
-                description = 'Gmail, sheets and drive CRUD with ease'
+                description = 'Gmail, sheets, drive and docs CRUD with ease'
                 url = 'https://github.com/ozzyozbourne/dsapi'
                 inceptionYear = '2022'
 

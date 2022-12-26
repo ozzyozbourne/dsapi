@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  *
  * @author osaid khan
- * @version 4.2.0
+ * @version 5.0.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google sheets Api that uses Objects as string for all CRUD operations
  */
