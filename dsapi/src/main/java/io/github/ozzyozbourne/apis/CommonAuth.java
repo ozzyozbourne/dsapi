@@ -18,6 +18,11 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author osaid khan
+ * @version 5.1.0
+ * Common connection  Utilities
+ */
 final class CommonAuth {
 
     /**
