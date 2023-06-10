@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  *
  * @author osaid khan
- * @version 5.0.0
+ * @version 5.1.0
  * @param <T> Class containing the necessary credentials files
  * A CRUD wrapper for Google Docs Api that uses Objects as string for all CRUD operations
  */
@@ -143,4 +143,17 @@ public class GDCapi<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        return "GDCapi{" +
+                "APPLICATION_NAME='" + APPLICATION_NAME + '\'' +
+                ", TOKENS_DIRECTORY_PATH='" + TOKENS_DIRECTORY_PATH + '\'' +
+                ", CREDS_STORE='" + CREDS_STORE + '\'' +
+                ", JSON_FACTORY=" + JSON_FACTORY +
+                ", SCOPES=" + SCOPES +
+                ", netHttpTransport=" + netHttpTransport +
+                ", docsService=" + docsService +
+                ", RESOURCE_CLASS=" + RESOURCE_CLASS +
+                '}';
+    }
 }
